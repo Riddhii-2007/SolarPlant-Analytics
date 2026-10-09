@@ -6,26 +6,50 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src.solar_analysis import combine_uploaded_files, make_reports
+from src.solar_analysis import combine_uploaded_files, find_local_dataset, make_reports
+
+DATA_DIR = Path(__file__).resolve().parent / "data"
+local_files = find_local_dataset(DATA_DIR)
 
 st.set_page_config(page_title="Solar Plant Performance", page_icon="☀️", layout="wide")
 st.markdown("""
 <style>
 .block-container {padding-top: 1.5rem; max-width: 1500px;}
 [data-testid="stMetric"] {background: #f6f3eb; border: 1px solid #e6dfcf; padding: 14px; border-radius: 12px;}
+/* Keep metric text readable when Streamlit's dark theme supplies light text. */
+[data-testid="stMetric"] [data-testid="stMetricLabel"],
+[data-testid="stMetric"] [data-testid="stMetricValue"],
+[data-testid="stMetric"] [data-testid="stMetricDelta"] {
+    color: #1f2937 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
 st.title("☀️ Solar Plant Performance Analysis")
 st.caption("Engineering data analysis dashboard · Pandas, NumPy, statistical screening · No ML prediction")
 
+welcome_uploaded = []
+if not local_files:
+    with st.container(border=True):
+        st.subheader("Explore your solar plant data")
+        st.write("Analyze inverter output, environmental conditions, estimated energy, and low-generation intervals from the Kaggle Solar Power Generation Data dataset.")
+        welcome_uploaded = st.file_uploader(
+            "Upload your dataset CSV files",
+            type=["csv"],
+            accept_multiple_files=True,
+            key="welcome_upload",
+            help="Select the four Kaggle CSV files to populate the dashboard.",
+        )
+        st.caption("Required: Plant_1 and Plant_2 generation CSVs plus their weather sensor CSVs.")
+
 with st.sidebar:
     st.header("Data")
-    st.write("Upload the CSV files from the Kaggle dataset. Upload one or both plants' generation and weather files.")
-    uploaded = st.file_uploader(
+    st.write("A complete dataset in `data/` loads automatically. Upload CSV files here to analyze a different dataset.")
+    sidebar_uploaded = st.file_uploader(
         "Select CSV files",
         type=["csv"],
         accept_multiple_files=True,
+        key="sidebar_upload",
         help="Include filenames containing 'Generation' and 'Weather' or 'Sensor'.",
     )
     st.markdown("[Open the Kaggle dataset](https://www.kaggle.com/datasets/anikannal/solar-power-generation-data)")
@@ -34,24 +58,25 @@ with st.sidebar:
     st.caption("The dashboard estimates energy by integrating sampled AC power over actual time intervals. The final sample in each series is excluded because its next interval is unknown.")
     st.caption("Low-generation flags are screening signals, not confirmed faults.")
 
-if not uploaded:
-    st.info("Upload the four Kaggle CSV files to begin. The app will calculate metrics and populate all charts from your data.")
-    st.markdown("""
-    **Expected files**
-    - `Plant_1_Generation_Data.csv`
-    - `Plant_1_Weather_Sensor_Data.csv`
-    - `Plant_2_Generation_Data.csv`
-    - `Plant_2_Weather_Sensor_Data.csv`
-    """)
+uploaded = sidebar_uploaded or welcome_uploaded
+if uploaded:
+    file_map = {file.name: file for file in uploaded}
+    data_source = "uploaded files"
+elif local_files:
+    file_map = local_files
+    data_source = "local data/ folder"
+else:
+    st.info("Upload the four required CSV files above to begin.")
     st.stop()
 
 try:
-    file_map = {f.name: f for f in uploaded}
     generation, weather = combine_uploaded_files(file_map)
     reports = make_reports(generation, weather)
 except Exception as exc:
-    st.error(f"Could not process the uploaded files: {exc}")
+    st.error(f"Could not process the {data_source}: {exc}")
     st.stop()
+
+st.caption(f"Data source: {data_source}")
 
 plant_ts = reports["plant_timeseries"]
 daily = reports["daily_generation"]

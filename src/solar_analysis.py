@@ -8,6 +8,21 @@ import pandas as pd
 
 GENERATION_REQUIRED = {"DATE_TIME", "PLANT_ID", "SOURCE_KEY", "DC_POWER", "AC_POWER"}
 WEATHER_REQUIRED = {"DATE_TIME", "PLANT_ID", "AMBIENT_TEMPERATURE", "MODULE_TEMPERATURE", "IRRADIATION"}
+KAGGLE_DATASET_FILENAMES = (
+    "Plant_1_Generation_Data.csv",
+    "Plant_1_Weather_Sensor_Data.csv",
+    "Plant_2_Generation_Data.csv",
+    "Plant_2_Weather_Sensor_Data.csv",
+)
+
+
+def find_local_dataset(data_dir: Path) -> Dict[str, Path]:
+    """Return the four expected Kaggle files when a complete local dataset exists."""
+    if not data_dir.is_dir():
+        return {}
+    available = {path.name.lower(): path for path in data_dir.iterdir() if path.is_file()}
+    files = {name: available.get(name.lower()) for name in KAGGLE_DATASET_FILENAMES}
+    return files if all(files.values()) else {}
 
 
 def read_csv_safely(source) -> pd.DataFrame:

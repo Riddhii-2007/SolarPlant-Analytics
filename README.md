@@ -4,8 +4,9 @@ A Python engineering data-analysis project for the Kaggle **Solar Power Generati
 
 ## 1. Dataset
 
-Download the four CSV files from:
-https://www.kaggle.com/datasets/anikannal/solar-power-generation-data
+1. Open [Kaggle's Solar Power Generation Data dataset](https://www.kaggle.com/datasets/anikannal/solar-power-generation-data) and download the dataset archive.
+2. Extract the four CSV files below directly into this project's `data/` folder. The dashboard detects a complete local set automatically when it starts.
+3. Alternatively, leave `data/` empty and upload the CSV files from the dashboard welcome screen or sidebar. Uploaded files take precedence over local files for that session.
 
 Expected filenames:
 - `Plant_1_Generation_Data.csv`
@@ -32,7 +33,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Upload the generation and weather/sensor CSVs using the sidebar file uploader. The dashboard offers date and plant filters, overview charts, inverter comparison, environmental analysis, low-generation review, and CSV/ZIP downloads.
+Place all four CSV files in `data/` to load them automatically, or upload them using the welcome screen or sidebar. The dashboard offers date and plant filters, overview charts, inverter comparison, environmental analysis, low-generation review, and CSV/ZIP downloads. The `data/*.csv` rule in `.gitignore` prevents the dataset from being committed.
 
 ## 4. Run tests
 

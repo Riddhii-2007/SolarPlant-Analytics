@@ -4,7 +4,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pandas as pd
 import numpy as np
-from src.solar_analysis import clean_generation, clean_weather, build_timeseries, daily_generation, find_low_generation_periods
+from src.solar_analysis import clean_generation, clean_weather, build_timeseries, daily_generation, estimate_energy_kwh, find_local_dataset, find_low_generation_periods
 
 
 def sample_frames():
@@ -34,6 +34,23 @@ def test_clean_generation_deduplicates_and_parses():
     assert pd.api.types.is_datetime64_any_dtype(cleaned["DATE_TIME"])
 
 
+def test_find_local_dataset_requires_all_four_expected_files(tmp_path):
+    expected = [
+        "Plant_1_Generation_Data.csv",
+        "Plant_1_Weather_Sensor_Data.csv",
+        "Plant_2_Generation_Data.csv",
+        "Plant_2_Weather_Sensor_Data.csv",
+    ]
+    for name in expected[:3]:
+        (tmp_path / name).touch()
+    assert find_local_dataset(tmp_path) == {}
+
+    (tmp_path / expected[3]).touch()
+    found = find_local_dataset(tmp_path)
+    assert set(found) == set(expected)
+    assert all(path.is_file() for path in found.values())
+
+
 def test_build_timeseries_and_daily_energy():
     gen, weather = sample_frames()
     g = clean_generation(gen)
@@ -43,7 +60,25 @@ def test_build_timeseries_and_daily_energy():
     assert plant["AC_POWER"].iloc[2] == 36
     daily = daily_generation(plant)
     assert len(daily) == 1
-    assert daily["ENERGY_KWH"].iloc[0] > 0
+    # Plant power is summed across two inverters, then integrated over four
+    # known 15-minute intervals: (0 + 18 + 36 + 54) kW * 0.25 h = 27 kWh.
+    assert daily["ENERGY_KWH"].iloc[0] == 27
+    # AC and DC are both kW, so the plant-level ratio is dimensionless.
+    assert plant.loc[plant["DC_POWER"] > 0, "AC_DC_EFFICIENCY_PCT"].eq(90).all()
+
+
+def test_energy_uses_actual_intervals_and_excludes_large_gaps():
+    df = pd.DataFrame({
+        "PLANT_NAME": ["Plant 1", "Plant 1", "Plant 1"],
+        "DATE_TIME": pd.to_datetime(["2025-01-01 06:00", "2025-01-01 06:30", "2025-01-01 08:00"]),
+        "AC_POWER": [10.0, 20.0, 30.0],
+    })
+
+    estimated = estimate_energy_kwh(df, ["PLANT_NAME"])
+
+    assert estimated["_ENERGY_KWH"].iloc[0] == 5.0
+    assert pd.isna(estimated["_ENERGY_KWH"].iloc[1])
+    assert pd.isna(estimated["_ENERGY_KWH"].iloc[2])
 
 
 def test_low_generation_flags_only_daylight_records():
