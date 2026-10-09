@@ -1,0 +1,1 @@
+Place the four Kaggle CSV files here if you want to keep local copies. The dashboard also supports uploading the files directly.
