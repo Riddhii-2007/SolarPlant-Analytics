@@ -8,7 +8,7 @@ The project uses **Pandas, NumPy, Matplotlib, Seaborn, and Streamlit** to transf
 
 **Website:** https://riddhii-2007-solarplant-analytics-app-kxuj1u.streamlit.app/
 
-You can explore the dashboard directly in your browser. To perform the analysis, upload the required dataset files through the application.
+You can explore the dashboard directly in your browser. Upload compatible solar generation and weather datasets to perform the analysis.
 
 ## 1. Project Overview
 
@@ -51,36 +51,47 @@ This project provides an interactive interface for analyzing these parameters wi
 - Highlight periods that may need further engineering investigation.
 
 ### Data and Downloads
-- Upload the required CSV files through the dashboard.
+- Upload compatible CSV files through the dashboard.
 - Inspect and analyze the loaded data.
 - Download available analysis results for further use.
 
 ## 3. Dataset
 
-This project uses the **Solar Power Generation Data** dataset available on Kaggle.
+This project was developed and tested using the **Solar Power Generation Data** dataset available on Kaggle.
 
-**Dataset link:** https://www.kaggle.com/datasets/anikannal/solar-power-generation-data
+**Example dataset:** https://www.kaggle.com/datasets/anikannal/solar-power-generation-data
 
-The dataset contains generation readings from two solar plants and associated weather sensor measurements.
+The reference dataset contains generation readings from two solar plants and associated weather sensor measurements.
 
-### Required Files
+### Example Dataset Files
 
-The application expects the following four CSV files:
+The following four CSV files belong to the example dataset used during development and testing:
 
 1. `Plant_1_Generation_Data.csv`
 2. `Plant_1_Weather_Sensor_Data.csv`
 3. `Plant_2_Generation_Data.csv`
 4. `Plant_2_Weather_Sensor_Data.csv`
 
-### Important: The Dataset Is Not Included in This Repository
+**These are example files, not the only datasets the application can analyze.**
 
-The CSV files are example data used for this project and are not included in the GitHub repository.
+You can use the original Kaggle dataset or provide your own compatible solar generation and weather datasets. Your data does not need to come from exactly two plants or use the same plant names as the example dataset.
 
-You can use the original Kaggle dataset or your own datasets, provided they follow the expected file structure and contain compatible columns.
+The important requirement is that your data contains the information needed by the analysis functions and follows a compatible structure.
 
-**If you clone this repository, you will not automatically receive the original dataset files.** You must download them separately or upload the files through the live dashboard.
+### Important: Dataset Files Are Not Included in This Repository
 
-### Expected Columns
+The example CSV files are not included in the GitHub repository.
+
+If you clone this repository, you will need to obtain your own data. You can download the example dataset from Kaggle or use your own compatible datasets.
+
+- **For the live website:** Upload your datasets through the dashboard.
+- **For local use:** Place the example files or your compatible datasets in the local `data` directory, or upload them through the dashboard.
+
+The application is designed for compatible solar generation and weather data, not arbitrary CSV files. Datasets with different column names or structures may require column mapping or changes to the analysis code.
+
+### Expected Data Fields
+
+The following columns describe the reference dataset and the information used by the analysis.
 
 **Generation data**
 
@@ -105,7 +116,7 @@ You can use the original Kaggle dataset or your own datasets, provided they foll
 | `MODULE_TEMPERATURE` | Solar module temperature |
 | `IRRADIATION` | Recorded solar irradiation |
 
-Your own CSV files must contain the required columns and compatible data. Renaming unrelated columns alone will not make an incompatible dataset suitable for this application.
+These are the column names used by the reference dataset. Your own datasets may use different names, but their fields must be mapped to the structure expected by the analysis code if they are not already compatible.
 
 ## 4. Installation and Setup
 
@@ -177,8 +188,8 @@ Streamlit will display a local URL in your terminal. Open that URL in your brows
 ### Option A: Use the Live Website
 
 1. Open the [SolarPlant Analytics dashboard](https://riddhii-2007-solarplant-analytics-app-kxuj1u.streamlit.app/).
-2. Download the example dataset from [Kaggle](https://www.kaggle.com/datasets/anikannal/solar-power-generation-data), or prepare your own compatible CSV files.
-3. Upload the four required files through the dashboard.
+2. Download the example dataset from [Kaggle](https://www.kaggle.com/datasets/anikannal/solar-power-generation-data), or prepare your own compatible solar generation and weather datasets.
+3. Upload the corresponding CSV files through the dashboard, following the application's upload requirements.
 4. Explore the different sections of the application.
 5. Review generation trends, inverter performance, environmental relationships, and potential low-generation observations.
 6. Download the available analysis results if needed.
@@ -186,12 +197,12 @@ Streamlit will display a local URL in your terminal. Open that URL in your brows
 ### Option B: Run the Project Locally
 
 1. Clone the repository and install the dependencies.
-2. Download the four required CSV files.
+2. Obtain the example dataset or prepare your own compatible datasets.
 3. Create a `data` folder in the project directory if it does not already exist.
-4. Place the files inside the `data` folder using the expected filenames.
+4. Place your data files in the `data` folder using the filenames and structure expected by the local-loading logic, or upload the files through the dashboard.
 5. Run the application using Streamlit.
 
-Your folder structure should look like this:
+Example folder structure when using the reference dataset:
 
 ```text
 SolarPlant-Analytics/
@@ -215,7 +226,9 @@ SolarPlant-Analytics/
 └── outputs/
 ```
 
-The dataset files are not tracked in Git, so you must obtain them separately. When running locally, the application can load the expected files from the `data` directory or use uploaded files through the dashboard.
+The four CSV filenames shown above are examples from the reference dataset. If you use different filenames or a different data structure, the local-loading logic or analysis code may need to be adjusted.
+
+Dataset files are excluded from Git, so cloning the repository does not download them automatically.
 
 ## 6. Analysis Methodology
 
@@ -278,9 +291,10 @@ These observations are flagged for further investigation; they are not automatic
 
 ## 7. Limitations
 
-- The application expects four compatible CSV files with the required structure.
-- The original dataset is not included in the repository.
+- The application requires compatible solar generation and weather datasets containing the information needed by the analysis functions.
+- The original example dataset is not included in the repository.
 - Results depend on the quality, completeness, and sampling frequency of the supplied data.
+- Datasets with incompatible column names or structures may require modifications to the data-loading or analysis code.
 - Estimated energy depends on the observed power readings and elapsed time between observations.
 - Correlation does not prove causation.
 - Low-generation flags indicate observations that may warrant investigation, not confirmed failures.
@@ -319,21 +333,21 @@ The tests help verify the behavior of supported analysis functions and data-hand
 SolarPlant-Analytics/
 │
 ├── app.py                    # Streamlit dashboard
-├── requirements.txt           # Python dependencies
-├── README.md                  # Project documentation
-├── .gitignore                 # Excluded files
+├── requirements.txt          # Python dependencies
+├── README.md                 # Project documentation
+├── .gitignore                # Excluded files
 │
 ├── src/
-│   └── solar_analysis.py      # Data processing and analysis logic
+│   └── solar_analysis.py     # Data processing and analysis logic
 │
 ├── tests/
-│   └── test_analysis.py       # Automated tests
+│   └── test_analysis.py      # Automated tests
 │
 ├── data/
-│   └── README.md              # Dataset instructions
+│   └── README.md             # Dataset instructions
 │
 └── outputs/
-    └── .gitkeep               # Keeps the output directory in Git
+    └── .gitkeep              # Keeps the output directory in Git
 ```
 
 ## Conclusion
@@ -341,6 +355,8 @@ SolarPlant-Analytics/
 SolarPlant Analytics demonstrates how Python-based data analysis can be applied to solar power generation data to explore plant performance, inverter readings, environmental relationships, and potential low-generation periods.
 
 By combining data processing, statistical analysis, engineering calculations, and an interactive dashboard, the project provides a practical starting point for understanding operational solar energy data.
+
+The application uses a Kaggle dataset as a reference, but it can also be adapted to work with other compatible solar generation and weather datasets.
 
 ## Author
 
@@ -352,7 +368,7 @@ By combining data processing, statistical analysis, engineering calculations, an
 
 ## Dataset Attribution
 
-The example dataset used for this project is available on Kaggle:
+The example dataset used for developing and testing this project is available on Kaggle:
 
 https://www.kaggle.com/datasets/anikannal/solar-power-generation-data
 
