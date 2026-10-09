@@ -1,91 +1,359 @@
 # Solar Power Plant Performance Analysis
 
-A Python engineering data-analysis project for the Kaggle **Solar Power Generation Data** dataset. It includes data cleaning, timestamp synchronization, engineering calculations, inverter/plant reports, six dashboard visualizations, and transparent low-generation screening. It does **not** use machine-learning prediction.
+A Python-based engineering data-analysis project that analyzes solar power generation, inverter performance, environmental conditions, and potential low-generation periods using real-world solar plant data.
 
-## 1. Dataset
+The project uses **Pandas, NumPy, Matplotlib, Seaborn, and Streamlit** to transform raw solar generation and weather data into an interactive dashboard with visualizations, statistical analysis, and downloadable results.
 
-1. Open [Kaggle's Solar Power Generation Data dataset](https://www.kaggle.com/datasets/anikannal/solar-power-generation-data) and download the dataset archive.
-2. Extract the four CSV files below directly into this project's `data/` folder. The dashboard detects a complete local set automatically when it starts.
-3. Alternatively, leave `data/` empty and upload the CSV files from the dashboard welcome screen or sidebar. Uploaded files take precedence over local files for that session.
+## Live Demo
 
-Expected filenames:
-- `Plant_1_Generation_Data.csv`
-- `Plant_1_Weather_Sensor_Data.csv`
-- `Plant_2_Generation_Data.csv`
-- `Plant_2_Weather_Sensor_Data.csv`
+**Website:** https://riddhii-2007-solarplant-analytics-app-kxuj1u.streamlit.app/
 
-The data card describes inverter-level generation readings sampled at roughly 15-minute intervals and plant-level weather readings. Generation records contain `DC_POWER`, `AC_POWER`, `DAILY_YIELD`, and `TOTAL_YIELD`; weather records include ambient temperature, module temperature, and irradiation.
+You can explore the dashboard directly in your browser. To perform the analysis, upload the required dataset files through the application.
 
-## 2. Setup (Windows)
+## 1. Project Overview
 
-Open Command Prompt in this project folder:
+Solar power plants generate large amounts of operational data, including AC power, DC power, daily energy yield, inverter readings, solar irradiation, and temperature measurements.
 
-```bat
+Analyzing these parameters helps us understand how a plant performs under different environmental conditions and identify periods that may require further investigation.
+
+This project provides an interactive interface for analyzing these parameters without manually processing large CSV files.
+
+### Objectives
+
+- Analyze solar power generation across plants and inverters.
+- Understand the relationship between solar irradiation and AC power output.
+- Compare inverter performance using available generation data.
+- Examine the influence of ambient and module temperatures on power generation.
+- Identify potential low-generation periods for engineering review.
+- Generate visualizations and downloadable analysis results.
+
+## 2. Features
+
+### Generation Overview
+- Analyze AC and DC power generation.
+- Explore generation trends over time.
+- Compare generation across plants.
+- Examine daily yield and estimated energy generation.
+
+### Inverter Performance
+- Compare inverter-level generation.
+- Analyze AC and DC power relationships.
+- Identify differences in inverter output for further investigation.
+
+### Environmental Analysis
+- Examine solar irradiation and power generation.
+- Analyze ambient and module temperatures.
+- Explore correlations between environmental parameters and AC power.
+
+### Low-Generation Review
+- Screen for potentially low-generation observations under sufficient solar irradiation.
+- Compare observations against plant- and hour-specific generation thresholds.
+- Highlight periods that may need further engineering investigation.
+
+### Data and Downloads
+- Upload the required CSV files through the dashboard.
+- Inspect and analyze the loaded data.
+- Download available analysis results for further use.
+
+## 3. Dataset
+
+This project uses the **Solar Power Generation Data** dataset available on Kaggle.
+
+**Dataset link:** https://www.kaggle.com/datasets/anikannal/solar-power-generation-data
+
+The dataset contains generation readings from two solar plants and associated weather sensor measurements.
+
+### Required Files
+
+The application expects the following four CSV files:
+
+1. `Plant_1_Generation_Data.csv`
+2. `Plant_1_Weather_Sensor_Data.csv`
+3. `Plant_2_Generation_Data.csv`
+4. `Plant_2_Weather_Sensor_Data.csv`
+
+### Important: The Dataset Is Not Included in This Repository
+
+The CSV files are example data used for this project and are not included in the GitHub repository.
+
+You can use the original Kaggle dataset or your own datasets, provided they follow the expected file structure and contain compatible columns.
+
+**If you clone this repository, you will not automatically receive the original dataset files.** You must download them separately or upload the files through the live dashboard.
+
+### Expected Columns
+
+**Generation data**
+
+| Column | Description |
+|---|---|
+| `DATE_TIME` | Date and time of the observation |
+| `PLANT_ID` | Identifier of the solar plant |
+| `SOURCE_KEY` | Identifier of the inverter or generation source |
+| `DC_POWER` | DC power reading |
+| `AC_POWER` | AC power reading |
+| `DAILY_YIELD` | Energy yield recorded for the day |
+| `TOTAL_YIELD` | Cumulative energy yield |
+
+**Weather sensor data**
+
+| Column | Description |
+|---|---|
+| `DATE_TIME` | Date and time of the observation |
+| `PLANT_ID` | Identifier of the solar plant |
+| `SOURCE_KEY` | Identifier of the weather sensor |
+| `AMBIENT_TEMPERATURE` | Ambient temperature |
+| `MODULE_TEMPERATURE` | Solar module temperature |
+| `IRRADIATION` | Recorded solar irradiation |
+
+Your own CSV files must contain the required columns and compatible data. Renaming unrelated columns alone will not make an incompatible dataset suitable for this application.
+
+## 4. Installation and Setup
+
+### Prerequisites
+
+- Python 3.10 or a compatible Python version
+- Git
+- A web browser
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/Riddhii-2007/SolarPlant-Analytics.git
+```
+
+### Step 2: Navigate to the Project Directory
+
+```bash
+cd SolarPlant-Analytics
+```
+
+If the cloned repository contains a nested project directory, navigate into the directory containing `app.py`.
+
+### Step 3: Create a Virtual Environment
+
+On Windows:
+
+```bash
 py -m venv .venv
+```
+
+### Step 4: Activate the Virtual Environment
+
+On Windows Command Prompt:
+
+```bash
 .venv\Scripts\activate
+```
+
+On PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+### Step 5: Install Dependencies
+
+```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## 3. Run the dashboard
+### Step 6: Run the Application
 
-```bat
+```bash
+python -m streamlit run app.py
+```
+
+Alternatively:
+
+```bash
 streamlit run app.py
 ```
 
-Place all four CSV files in `data/` to load them automatically, or upload them using the welcome screen or sidebar. The dashboard offers date and plant filters, overview charts, inverter comparison, environmental analysis, low-generation review, and CSV/ZIP downloads. The `data/*.csv` rule in `.gitignore` prevents the dataset from being committed.
+Streamlit will display a local URL in your terminal. Open that URL in your browser to access the dashboard.
 
-## 4. Run tests
+## 5. How to Use the Application
 
-```bat
-pytest -q
-```
+### Option A: Use the Live Website
 
-## 5. Analysis methods
+1. Open the [SolarPlant Analytics dashboard](https://riddhii-2007-solarplant-analytics-app-kxuj1u.streamlit.app/).
+2. Download the example dataset from [Kaggle](https://www.kaggle.com/datasets/anikannal/solar-power-generation-data), or prepare your own compatible CSV files.
+3. Upload the four required files through the dashboard.
+4. Explore the different sections of the application.
+5. Review generation trends, inverter performance, environmental relationships, and potential low-generation observations.
+6. Download the available analysis results if needed.
 
-- **Cleaning:** normalizes column names, parses timestamps, removes invalid power values, and deduplicates timestamp/inverter records.
-- **Synchronization:** aligns plant-level weather readings to inverter readings by plant and nearest timestamp, with an 8-minute tolerance.
-- **Plant power:** sums inverter AC/DC power at each timestamp.
-- **Estimated energy:** integrates sampled power over the actual time to the next sample. Gaps over one hour and the last reading in each time series are excluded because the following interval is unknown.
-- **Inverter report:** estimates AC energy and summarizes mean/peak power, irradiation, module temperature, and mean AC/DC ratio.
-- **Low-generation screening:** during daylight-like conditions (`IRRADIATION >= 0.2`), flags plant-time observations below that plant's 10th-percentile AC power for the same hour. This is a review queue, not a diagnosis.
-- **Correlation:** calculates Pearson correlations for irradiation vs AC power, module temperature vs AC power, and ambient vs module temperature.
+### Option B: Run the Project Locally
 
-## 6. Important engineering limitations
+1. Clone the repository and install the dependencies.
+2. Download the four required CSV files.
+3. Create a `data` folder in the project directory if it does not already exist.
+4. Place the files inside the `data` folder using the expected filenames.
+5. Run the application using Streamlit.
 
-1. The dataset does not provide a verified installed capacity for every inverter in the CSV, so capacity-normalized performance ratio is not calculated.
-2. AC/DC ratio is a proxy based on synchronized power samples. It can be distorted by timing mismatch, low-power readings, curtailment, clipping, sensor noise, or missing measurements. It is not automatically a certified inverter efficiency.
-3. The weather sensors are plant-level measurements; they may not describe every inverter's local conditions.
-4. The sampled power readings are instantaneous snapshots. Energy is estimated by integrating power over the elapsed time to the next observation. Compare estimates with `DAILY_YIELD`/`TOTAL_YIELD` only after checking the source units and semantics.
-5. An unusual drop does not prove equipment failure. Review irradiation, temperature, timestamps, and inverter-level data before drawing conclusions.
-6. No actual findings are stated in advance. The dashboard reports results from the CSVs that you upload.
-
-## 7. Project structure
+Your folder structure should look like this:
 
 ```text
-solar_power_plant_analysis/
+SolarPlant-Analytics/
+│
 ├── app.py
 ├── requirements.txt
 ├── README.md
+│
 ├── src/
 │   └── solar_analysis.py
+│
 ├── tests/
 │   └── test_analysis.py
-├── data/       # place local copies here if desired
-└── outputs/    # optional location for exported reports
+│
+├── data/
+│   ├── Plant_1_Generation_Data.csv
+│   ├── Plant_1_Weather_Sensor_Data.csv
+│   ├── Plant_2_Generation_Data.csv
+│   └── Plant_2_Weather_Sensor_Data.csv
+│
+└── outputs/
 ```
 
-## 8. Suggested report sections for submission
+The dataset files are not tracked in Git, so you must obtain them separately. When running locally, the application can load the expected files from the `data` directory or use uploaded files through the dashboard.
 
-1. Problem statement and objectives
-2. Dataset description and columns
-3. Data cleaning and timestamp synchronization
-4. Engineering formulas and assumptions
-5. Daily/hourly generation analysis
-6. Inverter-wise comparison
-7. Irradiation and temperature relationships
-8. Low-generation intervals and possible causes
-9. Dashboard screenshots
-10. Limitations and conclusion
+## 6. Analysis Methodology
 
-**Dataset source:** Ani Kannal, *Solar Power Generation Data*, Kaggle. Cite the dataset page in your submission and follow its stated data license/terms.
+The project uses data processing, statistical analysis, and engineering-oriented calculations to explore solar plant performance.
+
+### Data Cleaning and Preparation
+
+- Standardizes column names and processes timestamps.
+- Handles invalid values in power readings.
+- Removes duplicate inverter observations where applicable.
+- Prepares generation and weather data for analysis.
+
+### Generation Analysis
+
+- Aggregates inverter AC and DC power readings by plant and timestamp.
+- Examines generation trends over time.
+- Estimates energy from power readings and elapsed time between observations.
+
+### Energy Estimation
+
+Estimated energy is calculated using power and the elapsed time between consecutive observations:
+
+\[
+E = P \times \Delta t
+\]
+
+Where:
+
+- \(E\) is estimated energy in kWh.
+- \(P\) is power in kW.
+- \(\Delta t\) is the elapsed time in hours.
+
+Intervals exceeding one hour and the final observation without a subsequent timestamp are excluded from this estimation to reduce misleading calculations.
+
+This is an estimate based on the available sampling intervals, not a replacement for the plant's official energy meter readings.
+
+### Environmental Analysis
+
+The project examines relationships between:
+
+- Solar irradiation and AC power.
+- Module temperature and AC power.
+- Ambient temperature and module temperature.
+
+Pearson correlation is used to measure linear relationships between selected variables. Correlation alone does not establish causation.
+
+### Inverter Analysis
+
+Inverter readings are compared using available AC and DC power measurements.
+
+AC and DC power values can differ because they represent different stages of power conversion. A difference between them does not automatically indicate a fault or abnormal inverter efficiency.
+
+### Low-Generation Screening
+
+The application screens observations for potentially low generation under sufficient solar irradiation.
+
+It uses a plant- and hour-specific generation threshold based on the 10th percentile of relevant observations, with irradiation of at least `0.2` as a screening condition.
+
+These observations are flagged for further investigation; they are not automatically classified as confirmed equipment faults.
+
+## 7. Limitations
+
+- The application expects four compatible CSV files with the required structure.
+- The original dataset is not included in the repository.
+- Results depend on the quality, completeness, and sampling frequency of the supplied data.
+- Estimated energy depends on the observed power readings and elapsed time between observations.
+- Correlation does not prove causation.
+- Low-generation flags indicate observations that may warrant investigation, not confirmed failures.
+- AC/DC comparisons are analytical indicators and are not certified inverter-efficiency measurements.
+- Installed plant capacity is not provided as a reliable input for this analysis, so a capacity-normalized performance ratio is not calculated.
+- This project supports exploratory analysis and engineering review; it does not replace professional plant diagnostics or operational monitoring systems.
+
+## 8. Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Python | Core programming language |
+| Pandas | Data cleaning and manipulation |
+| NumPy | Numerical calculations |
+| Matplotlib | Data visualization |
+| Seaborn | Statistical visualization |
+| Streamlit | Interactive web dashboard |
+| Pytest | Automated testing |
+| Git and GitHub | Version control and project hosting |
+
+## 9. Running Tests
+
+The project includes automated tests for selected data-analysis functions.
+
+After installing the dependencies, run:
+
+```bash
+python -m pytest
+```
+
+The tests help verify the behavior of supported analysis functions and data-handling logic.
+
+## 10. Project Structure
+
+```text
+SolarPlant-Analytics/
+│
+├── app.py                    # Streamlit dashboard
+├── requirements.txt           # Python dependencies
+├── README.md                  # Project documentation
+├── .gitignore                 # Excluded files
+│
+├── src/
+│   └── solar_analysis.py      # Data processing and analysis logic
+│
+├── tests/
+│   └── test_analysis.py       # Automated tests
+│
+├── data/
+│   └── README.md              # Dataset instructions
+│
+└── outputs/
+    └── .gitkeep               # Keeps the output directory in Git
+```
+
+## Conclusion
+
+SolarPlant Analytics demonstrates how Python-based data analysis can be applied to solar power generation data to explore plant performance, inverter readings, environmental relationships, and potential low-generation periods.
+
+By combining data processing, statistical analysis, engineering calculations, and an interactive dashboard, the project provides a practical starting point for understanding operational solar energy data.
+
+## Author
+
+**GitHub:** https://github.com/Riddhii-2007
+
+**Repository:** https://github.com/Riddhii-2007/SolarPlant-Analytics
+
+**Live Application:** https://riddhii-2007-solarplant-analytics-app-kxuj1u.streamlit.app/
+
+## Dataset Attribution
+
+The example dataset used for this project is available on Kaggle:
+
+https://www.kaggle.com/datasets/anikannal/solar-power-generation-data
+
+Please refer to the original dataset page for its licensing terms and usage conditions.
